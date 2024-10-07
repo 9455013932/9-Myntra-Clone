@@ -13,8 +13,10 @@ const FetchItems = () => {
     const controller = new AbortController();
     const signal = controller.signal;
 
+    const API_URL = process.env.REACT_APP_API_URL
+
     dispatch(fetchStatusActions.markFetchingStarted());
-    fetch("https://9-myntra-clone-ekbo.vercel.app/", { signal })
+    fetch(API_URL, { signal })
       .then((res) => res.json())
       .then(({ items }) => {
         dispatch(fetchStatusActions.markFetchDone());
