@@ -13,21 +13,34 @@ const FetchItems = () => {
     const controller = new AbortController();
     const signal = controller.signal;
 
+    const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080/items";
+
     dispatch(fetchStatusActions.markFetchingStarted());
-    fetch("https://9-myntra-clone-pi.vercel.app/items", { signal })
-      .then((res) => res.json())
+    
+    fetch(`https://9-myntra-clone-pi.vercel.app/`, { signal })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return res.json();
+      })
       .then(({ items }) => {
         dispatch(fetchStatusActions.markFetchDone());
         dispatch(fetchStatusActions.markFetchingFinished());
-        dispatch(itemsActions.addInitialItems(items[0]));
+        dispatch(itemsActions.addInitialItems(items));
+      })
+      .catch((error) => {
+        console.error('Fetch error:', error);
+        dispatch(fetchStatusActions.markFetchingFinished());
+        // Optionally handle the error in the Redux store
       });
 
     return () => {
       controller.abort();
     };
-  }, [fetchStatus]);
+  }, [fetchStatus, dispatch]);
 
-  return <></>;
+  return null; // or any loading indicator you prefer
 };
 
 export default FetchItems;
